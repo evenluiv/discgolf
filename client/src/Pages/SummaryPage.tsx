@@ -12,12 +12,20 @@ function SummaryPage() {
 
   const calculateTotalScore = (scores: number[]) =>
     scores.reduce((total, score) => (score !== null ? total + score : total), 0);
-
+  
   const calculateParDifference = (scores: number[]) => {
-    const totalScore = calculateTotalScore(scores);
-    const totalPar = holes.reduce((sum, hole) => sum + hole.par, 0);
+    // Filter out unmarked holes (scores that are null)
+    const validScores = scores.filter((score) => score !== null);
+    const totalScore = calculateTotalScore(validScores);
+  
+    // Calculate par only for holes that are marked
+    const totalPar = holes
+      .filter((_, index) => scores[index] !== null)
+      .reduce((sum, hole) => sum + hole.par, 0);
+  
     return totalScore - totalPar;
   };
+  
 
   const totalPar = holes.reduce((sum, hole) => sum + hole.par, 0); // Calculate total par
 
@@ -26,49 +34,49 @@ function SummaryPage() {
     par: number,
     isOB: boolean
   ): string => {
-    let baseStyle = "bg-white";
-
+    let baseStyle = "bg-white relative";
+  
     if (score === null) return baseStyle;
-
+  
     if (score === 1) {
-      baseStyle = "bg-yellow-200 text-yellow-800 font-bold"; // Hole-in-one
+      baseStyle = "bg-yellow-200 text-yellow-800 font-bold relative"; // Hole-in-one
     } else {
       const difference = score - par;
-
+  
       if (difference < -2) {
-        baseStyle = "bg-green-200 text-green-900"; // More than 2 under par
+        baseStyle = "bg-green-200 text-green-900 relative"; // More than 2 under par
       } else if (difference < 0) {
-        baseStyle = "bg-green-100 text-green-800"; // Under par
+        baseStyle = "bg-green-100 text-green-800 relative"; // Under par
       } else if (difference === 1) {
-        baseStyle = "bg-red-100 text-red-800"; // One over par
+        baseStyle = "bg-red-100 text-red-800 relative"; // One over par
       } else if (difference > 1) {
-        baseStyle = "bg-red-200 text-red-900"; // Two or more over par
+        baseStyle = "bg-red-200 text-red-900 relative"; // Two or more over par
       } else {
-        baseStyle = "text-gray-800"; // Par
+        baseStyle = "text-gray-800 relative"; // Par
       }
     }
-
+  
     if (isOB) {
-      baseStyle += " border-b-4 border-red-500"; // Add red underline for OB
+      baseStyle += " after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[4px] after:bg-red-500";
     }
-
+  
     return baseStyle;
-  };
+  };  
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-16">
+    <div className="min-h-screen py-8 px-4 md:px-16">
       <h1 className="text-3xl font-bold text-center mb-4 text-green-600">
         Game Summary
       </h1>
       <h2 className="text-xl text-center mb-6 text-gray-800">
         Course: <span className="font-semibold">{courseName}</span>
       </h2>
-      <div className="overflow-x-auto">
-        <table className="min-w-full border border-gray-300 rounded-lg shadow-sm text-sm">
+      <div className="overflow-x-auto border-8 rounded-md border-green-1 outline-2 outline-green-2 outline-double">
+        <table className="min-w-full shadow-sm text-sm">
           <thead>
             <tr>
               <th className="py-2 px-3 bg-gray-200 text-left font-medium text-gray-700 sticky left-0 z-10">
-                Player
+                Holes
               </th>
               {holes.map((hole, index) => (
                 <th
@@ -137,7 +145,7 @@ function SummaryPage() {
                     {totalScore}
                   </td>
                   <td
-                    className={`py-2 px-3 text-center font-bold sticky right-0 bg-white z-10 ${
+                    className={`py-2 px-3 text-center font-bold sticky right-0 z-10 ${
                       parDifference < -2
                         ? "bg-green-200 text-green-900"
                         : parDifference < 0

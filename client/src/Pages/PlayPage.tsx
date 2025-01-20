@@ -99,16 +99,22 @@ const PlayPage = () => {
   };
 
   const nextHoleOrPlayer = () => {
+    // If not on the last player, switch to the next player
     if (selectedPlayerIndex < numPlayers - 1) {
-      setSelectedPlayerIndex(selectedPlayerIndex + 1); // Move to the next player
-    } else if (currentHoleIndex < holes.length - 1) {
-      setCurrentHoleIndex(currentHoleIndex + 1); // Move to the next hole
-      setSelectedPlayerIndex(0); // Reset to the first player
-    } else {
+      setSelectedPlayerIndex(selectedPlayerIndex + 1);
+    } 
+    // If on the last player and not on the last hole, switch to the next hole
+    else if (currentHoleIndex < holes.length - 1) {
+      setCurrentHoleIndex(currentHoleIndex + 1);
+      setSelectedPlayerIndex(0); // Reset to the first player for the next hole
+    } 
+    // If on the last player and the last hole, navigate to the results page
+    else {
       navigate("/results", { state: { courseName, players, holes } });
     }
     setPendingInput(null); // Reset pending input when moving to the next player or hole
   };
+  
 
   const previousHole = () => {
     if (currentHoleIndex > 0) {
