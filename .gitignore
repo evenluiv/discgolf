@@ -132,3 +132,4 @@ dist
 # additional files
 init.sql
 Dockerfile
+.vercel

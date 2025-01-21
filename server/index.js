@@ -15,6 +15,10 @@ app.get("/", (req, res) => {
   res.send("You are in root");
 });
 
+app.get('/api', (req, res) => {
+  res.send('Welcome to the API');
+});
+
 app.get('/api/courses', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM courses');
@@ -47,3 +51,4 @@ app.listen(PORT, () => {
 })
 
 module.exports = router;
+module.exports = app;
