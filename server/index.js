@@ -1,25 +1,22 @@
 const express = require('express');
-const router = express.Router();
 const pool = require('./db');
 const cors = require('cors');
-const app = express();
 
 const PORT = process.env.PORT || 9000;
 
+const app = express();
 app.use(cors());
 app.use(express.json()); 
 
-//Here you can add your routes
-//Here's an example
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.send("You are in root");
 });
 
-app.get('/api', (req, res) => {
+app.get('/api', (_req, res) => {
   res.send('Welcome to the API');
 });
 
-app.get('/api/courses', async (req, res) => {
+app.get('/api/courses', async (_req, res) => {
   try {
     const result = await pool.query('SELECT * FROM courses');
     res.status(200).json(result.rows);
@@ -50,5 +47,4 @@ app.listen(PORT, () => {
     console.log(`Server listening on the port ${PORT}`);
 })
 
-module.exports = router;
 module.exports = app;
