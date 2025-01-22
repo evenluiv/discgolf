@@ -15,12 +15,12 @@ const sortCourses = (arr: Course[]): Course[] => {
 
     for (let j = 0; j < length - i - 1; j++) {
       if (arr[j].course_name > arr[j + 1].course_name) {
-        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]]; // Swap elements
+        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
         swapped = true;
       }
     }
 
-    if (!swapped) break; // If no swaps were made, array is sorted
+    if (!swapped) break;
   }
 
   return arr;
@@ -29,12 +29,11 @@ const sortCourses = (arr: Course[]): Course[] => {
 function HomePage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<number | null>(null);
-  const [numPlayers, setNumPlayers] = useState<number>(1);
-  const [playerNames, setPlayerNames] = useState<string[]>([""]);
+  const [playerNames, setPlayerNames] = useState<string[]>(["Player 1"]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("https://discgolf-backend.onrender.com/api/courses") // Node backend URL
+    fetch("https://discgolf-backend.onrender.com/api/courses")
       .then((response) => response.json())
       .then((data: Course[]) => {
         const sortedCourses = sortCourses(data);
@@ -49,36 +48,40 @@ function HomePage() {
     setPlayerNames(updatedNames);
   };
 
-  const handleNumPlayersChange = (count: number) => {
-    setNumPlayers(count);
-    const updatedNames = [...playerNames];
-    while (updatedNames.length < count) updatedNames.push("");
-    while (updatedNames.length > count) updatedNames.pop();
-    setPlayerNames(updatedNames);
+  const addPlayer = () => {
+    if (playerNames.length < 8) {
+      setPlayerNames([...playerNames, `Player ${playerNames.length + 1}`]);
+    }
+  };
+
+  const removePlayer = (index: number) => {
+    if (playerNames.length > 1) {
+      setPlayerNames(playerNames.filter((_, i) => i !== index));
+    }
   };
 
   const handleStartGame = async () => {
-    if (selectedCourse && numPlayers > 0) {
+    if (selectedCourse && playerNames.length > 0) {
       try {
         const selectedCourseDetails = courses.find(
           (course) => course.course_id === selectedCourse
         );
-  
+
         if (!selectedCourseDetails) {
           console.error("Selected course not found");
           return;
         }
-  
+
         const response = await fetch(
           `https://discgolf-backend.onrender.com/api/courses/${selectedCourse}`
         );
         const holes = await response.json();
-  
+
         navigate(`/play`, {
           state: {
             courseId: selectedCourse,
             courseName: selectedCourseDetails.course_name,
-            numPlayers,
+            numPlayers: playerNames.length,
             playerNames,
             holes,
           },
@@ -97,14 +100,15 @@ function HomePage() {
           e.preventDefault();
           handleStartGame();
         }}
-        className="flex flex-col justify-between items-center gap-6"
+        className="flex flex-col justify-between items-center gap-6 w-full max-w-md"
       >
-        <label className="flex flex-row gap-2">
-          Select course:
+        <label className="flex flex-row justify-between w-full">
+          <span>Select course:</span>
           <select
             value={selectedCourse || ""}
             onChange={(e) => setSelectedCourse(Number(e.target.value))}
             required
+            className="border-2 border-gray-300 rounded px-2 py-1"
           >
             <option value="" disabled>
               Choose a course
@@ -116,32 +120,44 @@ function HomePage() {
             ))}
           </select>
         </label>
-        <label className="flex flex-row gap-2">
-          Number of players:
-          <input
-            type="number"
-            min={1}
-            max={8}
-            value={numPlayers}
-            onChange={(e) => handleNumPlayersChange(Number(e.target.value))}
-            required
-          />
-        </label>
-        <div className="flex flex-col gap-3">
-          {Array.from({ length: numPlayers }, (_, index) => (
-            <label key={index} className="flex flex-row gap-2 border-2 border-solid border-green-1 rounded-md p-3">
-              Player {index + 1} name:
+        <div className="flex flex-col w-full gap-2">
+          <h2 className="text-lg font-bold">Players:</h2>
+          {playerNames.map((player, index) => (
+            <div
+              key={index}
+              className="flex items-center gap-2 border-2 border-green-1 rounded-md p-3"
+            >
               <input
-                className="px-2"
                 type="text"
-                value={playerNames[index]}
+                className="flex-1 px-2 py-1 border border-gray-300 rounded"
+                value={player}
                 onChange={(e) => handlePlayerNameChange(index, e.target.value)}
                 required
               />
-            </label>
+              {playerNames.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removePlayer(index)}
+                  className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
           ))}
+          {playerNames.length < 8 && (
+            <button
+              type="button"
+              onClick={addPlayer}
+              className="w-full px-3 py-2 text-center text-white bg-green-500 rounded hover:bg-green-600"
+            >
+              + Add Player
+            </button>
+          )}
         </div>
-        <button type="submit" className="bg-green-2 rounded-md p-2">Start Game</button>
+        <button type="submit" className="w-full bg-green-2 rounded-md p-2">
+          Start Game
+        </button>
       </form>
     </div>
   );
