@@ -34,7 +34,7 @@ function HomePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:9000/api/courses") // Node backend URL
+    fetch("https://discgolf-backend.onrender.com/api/courses") // Node backend URL
       .then((response) => response.json())
       .then((data: Course[]) => {
         const sortedCourses = sortCourses(data);
@@ -70,7 +70,7 @@ function HomePage() {
         }
   
         const response = await fetch(
-          `http://localhost:9000/api/courses/${selectedCourse}`
+          `https://discgolf-backend.onrender.com/api/courses/${selectedCourse}`
         );
         const holes = await response.json();
   
