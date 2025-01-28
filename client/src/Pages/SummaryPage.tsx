@@ -74,7 +74,7 @@ function SummaryPage() {
         <table className="min-w-full shadow-sm text-sm">
           <thead>
             <tr>
-              <th className="py-2 px-3 bg-gray-200 text-left font-medium text-gray-700 sticky left-0 z-10">
+              <th className="py-2 px-3 bg-gray-200 text-center font-medium text-gray-700 sticky left-0 z-10">
                 Holes
               </th>
               {holes.map((hole, index) => (
@@ -93,7 +93,7 @@ function SummaryPage() {
               </th>
             </tr>
             <tr>
-              <th className="py-2 px-3 bg-gray-100 text-left font-medium text-gray-600 sticky left-0 z-10">
+              <th className="py-2 px-3 bg-gray-100 text-center font-medium text-gray-600 sticky left-0 z-10">
                 Par
               </th>
               {holes.map((hole, index) => (

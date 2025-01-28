@@ -131,7 +131,13 @@ function HomePage() {
                 type="text"
                 className="flex-1 px-2 py-1 border border-gray-300 rounded"
                 value={player}
-                onChange={(e) => handlePlayerNameChange(index, e.target.value)}
+                onChange={(e) => {
+                  const newValue = e.target.value;
+                  if (newValue.length <= 20) {
+                    handlePlayerNameChange(index, newValue);
+                  }
+                }}
+                maxLength={20}
                 required
               />
               {playerNames.length > 1 && (
@@ -155,7 +161,10 @@ function HomePage() {
             </button>
           )}
         </div>
-        <button type="submit" className="w-full bg-green-2 hover:bg-green-3 font-medium rounded-md p-2">
+        <button
+          type="submit"
+          className="w-full bg-green-2 hover:bg-green-3 font-medium rounded-md p-2"
+        >
           Start Game
         </button>
       </form>
