@@ -126,10 +126,10 @@ const PlayPage = () => {
 
   return (
     <div className="play-page flex flex-col min-h-screen">
-      <header className="header text-lg flex flex-row justify-between items-center px-10 pt-8">
+      <header className="header text-lg flex flex-row justify-between items-center px-4 pt-8">
         <h1>Course Name: {courseName}</h1>
         <button
-          className="results-button bg-green-3 text-white px-3 py-1 rounded"
+          className="results-button bg-green-2 hover:bg-green-1 font-medium text-white px-6 py-1 rounded-md"
           onClick={() => navigate("/results", { state: { courseName, players, holes } })}
         >
           Results

@@ -64,7 +64,7 @@ function SummaryPage() {
 
   return (
     <div className="min-h-screen py-8 px-4 md:px-16">
-      <h1 className="text-3xl font-bold text-center mb-4 text-green-600">
+      <h1 className="text-3xl font-bold text-center mb-4">
         Game Summary
       </h1>
       <h2 className="text-xl text-center mb-6 text-gray-800">
@@ -168,7 +168,7 @@ function SummaryPage() {
       <div className="mt-8 flex justify-center gap-4">
         <button
           onClick={() => navigate("/")}
-          className="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow"
+          className="px-6 py-2 text-sm font-medium text-green-2 hover:bg-green-1 rounded-lg border-2 border-green-2 shadow"
         >
           Back to Home
         </button>
@@ -178,7 +178,7 @@ function SummaryPage() {
               state: { courseName, players, holes },
             })
           }
-          className="px-6 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg shadow"
+          className="px-6 py-2 text-sm font-medium text-white bg-green-2 hover:bg-green-1 rounded-lg shadow"
         >
           Edit Scores
         </button>
