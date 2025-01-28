@@ -102,13 +102,13 @@ function HomePage() {
         }}
         className="flex flex-col justify-between items-center gap-6 w-full max-w-md"
       >
-        <label className="flex flex-row justify-between w-full">
+        <label className="flex flex-row items-baseline gap-4 w-full">
           <span>Select course:</span>
           <select
             value={selectedCourse || ""}
             onChange={(e) => setSelectedCourse(Number(e.target.value))}
             required
-            className="border-2 border-gray-300 rounded px-2 py-1"
+            className="flex flex-grow border-2 border-green-1 rounded-md px-2 py-1"
           >
             <option value="" disabled>
               Choose a course
@@ -149,13 +149,13 @@ function HomePage() {
             <button
               type="button"
               onClick={addPlayer}
-              className="w-full px-3 py-2 text-center text-white bg-green-500 rounded hover:bg-green-600"
+              className="w-full px-3 py-2 text-center text-white rounded-md font-medium bg-green-1 hover:bg-green-2"
             >
               + Add Player
             </button>
           )}
         </div>
-        <button type="submit" className="w-full bg-green-2 rounded-md p-2">
+        <button type="submit" className="w-full bg-green-2 hover:bg-green-3 font-medium rounded-md p-2">
           Start Game
         </button>
       </form>
