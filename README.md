@@ -34,6 +34,7 @@ cd discgolf
 
 ### Install dependencies
 ```
+cd client
 npm install
 ```
 
