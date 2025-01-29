@@ -103,22 +103,28 @@ function HomePage() {
         className="flex flex-col justify-between items-center gap-6 w-full max-w-md"
       >
         <label className="flex flex-row items-baseline gap-4 w-full">
-          <span>Select course:</span>
-          <select
-            value={selectedCourse || ""}
-            onChange={(e) => setSelectedCourse(Number(e.target.value))}
-            required
-            className="flex flex-grow border-2 border-green-1 rounded-md px-2 py-1"
-          >
-            <option value="" disabled>
-              Choose a course
-            </option>
-            {courses.map((course) => (
-              <option key={course.course_id} value={course.course_id}>
-                {course.course_name}
+          <span className="flex flex-shrink-0">Select course:</span>
+          {courses.length === 0 ? (
+            <div className="flex border-2 flex-grow border-yellow-400 bg-yellow-100 text-yellow-700 rounded-md px-2 py-1">
+              Server is starting up, this may take 50 seconds or more...
+            </div>
+          ) : (
+            <select
+              value={selectedCourse || ""}
+              onChange={(e) => setSelectedCourse(Number(e.target.value))}
+              required
+              className="flex flex-grow border-2 border-green-1 rounded-md px-2 py-1"
+            >
+              <option value="" disabled>
+                Choose a course
               </option>
-            ))}
-          </select>
+              {courses.map((course) => (
+                <option key={course.course_id} value={course.course_id}>
+                  {course.course_name}
+                </option>
+              ))}
+            </select>
+          )}
         </label>
         <div className="flex flex-col w-full gap-2">
           <h2 className="text-lg font-bold">Players:</h2>
