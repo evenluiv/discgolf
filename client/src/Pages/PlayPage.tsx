@@ -124,10 +124,47 @@ const PlayPage = () => {
     setPendingInput(null); // Reset pending input when moving to the previous hole
   };
 
+  function getScoreLabel(score: number, par: number) {
+    // Special case: Hole in One
+    if (score === 1) return "HIO";
+    
+    const diff = score - par;
+    
+    if (diff === 0) return "Par";
+    
+    // Under par
+    if (diff < 0) {
+      switch (diff) {
+        case -1:
+          return "Birdie";
+        case -2:
+          return "Eagle";
+        case -3:
+          return "Albatross";
+        default:
+          return `${Math.abs(diff)} under par`;
+      }
+    }
+    
+    // Over par
+    if (diff > 0) {
+      switch (diff) {
+        case 1:
+          return "Bogey";
+        case 2:
+          return "Double Bogey";
+        case 3:
+          return "Triple Bogey";
+        default:
+          return `${diff} over par`;
+      }
+    }
+  }
+
   return (
     <div className="play-page flex flex-col min-h-screen">
       <header className="header text-lg flex flex-row justify-between items-center px-4 pt-8">
-        <h1>Course Name: {courseName}</h1>
+        <h1 className="text-xl font-bold text-green-3">{courseName}</h1>
         <button
           className="results-button bg-green-2 hover:bg-green-1 font-medium text-white px-6 py-1 rounded-md"
           onClick={() => navigate("/results", { state: { courseName, players, holes } })}
@@ -191,9 +228,12 @@ const PlayPage = () => {
               </button>
 
               <span className="player-score text-lg font-bold text-right">
-                {player.scores[currentHoleIndex] !== null
-                  ? player.scores[currentHoleIndex]
-                  : "-"}
+                {player.scores[currentHoleIndex] !== null ? player.scores[currentHoleIndex]  : "-"}
+                {player.scores[currentHoleIndex]  !== null && player.scores[currentHoleIndex]  > 0 && (
+                <span className={`text-sm ml-2 ${ player.scores[currentHoleIndex] === 1 ? "text-yellow-400" : player.scores[currentHoleIndex] < currentHole.par ? "text-green-500" : player.scores[currentHoleIndex] > currentHole.par ? "text-red-500" : "text-gray-600"}`}>
+                  {getScoreLabel(player.scores[currentHoleIndex] , currentHole.par)}
+                </span>
+                )}
               </span>
             </div>
           ))}
