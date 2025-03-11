@@ -6,38 +6,19 @@ interface Course {
   course_name: string;
 }
 
-const sortCourses = (arr: Course[]): Course[] => {
-  const length = arr.length;
-  let swapped: boolean;
-
-  for (let i = 0; i < length - 1; i++) {
-    swapped = false;
-
-    for (let j = 0; j < length - i - 1; j++) {
-      if (arr[j].course_name > arr[j + 1].course_name) {
-        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-        swapped = true;
-      }
-    }
-
-    if (!swapped) break;
-  }
-
-  return arr;
-};
-
 function HomePage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<number | null>(null);
+  const [selectedCourseName, setSelectedCourseName] = useState<string>('');
   const [playerNames, setPlayerNames] = useState<string[]>(["Player 1"]);
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const navigate = useNavigate();
 
   useEffect(() => {
     fetch("https://discgolf-backend.onrender.com/api/courses")
       .then((response) => response.json())
       .then((data: Course[]) => {
-        const sortedCourses = sortCourses(data);
-        setCourses(sortedCourses);
+        setCourses(data);
       })
       .catch((error) => console.error("Error fetching courses:", error));
   }, []);
@@ -92,50 +73,71 @@ function HomePage() {
     }
   };
 
+  // Filter courses based on search term
+  const filteredCourses = courses.filter(course => 
+    course.course_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Handle course selection
+  const handleCourseSelect = (courseId: number, courseName: string) => {
+    setSelectedCourse(courseId);
+    setSelectedCourseName(courseName);
+  };
+
   return (
-    <div className="homepage flex flex-col min-h-screen items-center p-4 gap-4">
-      <h1>Disc Golf Score Tracker</h1>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleStartGame();
-        }}
-        className="flex flex-col justify-between items-center gap-6 w-full max-w-md"
-      >
-        <label className="flex flex-row items-baseline gap-4 w-full">
-          <span className="flex flex-shrink-0">Select course:</span>
-          {courses.length === 0 ? (
-            <div className="flex border-2 flex-grow border-yellow-400 bg-yellow-100 text-yellow-700 rounded-md px-2 py-1">
-              Server is starting up, this may take 50 seconds or more...
-            </div>
-          ) : (
-            <select
-              value={selectedCourse || ""}
-              onChange={(e) => setSelectedCourse(Number(e.target.value))}
-              required
-              className="flex flex-grow border-2 border-green-1 rounded-md px-2 py-1"
-            >
-              <option value="" disabled>
-                Choose a course
-              </option>
-              {courses.map((course) => (
-                <option key={course.course_id} value={course.course_id}>
-                  {course.course_name}
-                </option>
-              ))}
-            </select>
-          )}
-        </label>
-        <div className="flex flex-col w-full gap-2">
-          <h2 className="text-lg font-bold">Players:</h2>
+    <div className="min-h-screen bg-green-50 p-4">
+      <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h1 className="text-2xl font-bold text-center text-green-800 mb-6">Disc Golf Scorecard</h1>
+        
+        {/* Course Selection */}
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-green-700 mb-3">Select Course</h2>
+          <input
+            type="text"
+            placeholder="Search for course"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+          
+          <div className="max-h-40 overflow-y-auto mb-3 border border-gray-200 rounded-lg">
+            {courses.length === 0 ? (
+              <div className="p-4 text-yellow-700 bg-yellow-100 border border-yellow-400 rounded-lg">
+                Server is starting up, this may take 50 seconds or more...
+              </div>
+            ) : (
+              filteredCourses.map((course) => (
+                <div 
+                  key={course.course_id}
+                  className={`p-3 cursor-pointer hover:bg-green-100 ${selectedCourse === course.course_id ? 'bg-green-200' : ''}`}
+                  onClick={() => handleCourseSelect(course.course_id, course.course_name)}
+                >
+                  <div className="font-medium">{course.course_name}</div>
+                </div>
+              ))
+            )}
+            
+            {filteredCourses.length === 0 && searchTerm && courses.length > 0 && (
+              <div className="p-4 text-gray-600">
+                No courses found matching "{searchTerm}"
+              </div>
+            )}
+          </div>
+          
+          <div className="text-sm text-gray-600 mb-3">
+            Selected: <span className="font-medium">{selectedCourseName || 'None'}</span>
+          </div>
+        </div>
+        
+        {/* Player Names */}
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-green-700 mb-3">Players (max 8)</h2>
+          
           {playerNames.map((player, index) => (
-            <div
-              key={index}
-              className="flex items-center gap-2 border-2 border-green-1 rounded-md p-3"
-            >
+            <div key={index} className="flex mb-2">
               <input
                 type="text"
-                className="flex-1 px-2 py-1 border border-gray-300 rounded"
+                placeholder={`Player ${index + 1}`}
                 value={player}
                 onChange={(e) => {
                   const newValue = e.target.value;
@@ -144,36 +146,46 @@ function HomePage() {
                   }
                 }}
                 maxLength={20}
+                className="flex-grow p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 required
               />
               {playerNames.length > 1 && (
-                <button
-                  type="button"
+                <button 
                   onClick={() => removePlayer(index)}
-                  className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                  type="button"
+                  className="ml-2 px-3 bg-red-500 text-white rounded-lg"
                 >
-                  Remove
+                  ✕
                 </button>
               )}
             </div>
           ))}
+          
           {playerNames.length < 8 && (
-            <button
-              type="button"
+            <button 
               onClick={addPlayer}
-              className="w-full px-3 py-2 text-center text-white rounded-md font-medium bg-green-1 hover:bg-green-2"
+              type="button"
+              className="w-full p-2 bg-green-600 text-white rounded-lg mt-2"
             >
-              + Add Player
+              Add Player
             </button>
           )}
         </div>
-        <button
-          type="submit"
-          className="w-full bg-green-2 hover:bg-green-3 font-medium rounded-md p-2"
+        
+        {/* Start Game Button */}
+        <button 
+          onClick={handleStartGame}
+          type="button"
+          disabled={!selectedCourse || playerNames.some(name => name.trim() === '')}
+          className={`w-full p-4 text-white text-lg font-bold rounded-lg transition-colors ${
+            !selectedCourse || playerNames.some(name => name.trim() === '') 
+              ? 'bg-gray-400' 
+              : 'bg-green-700 hover:bg-green-800'
+          }`}
         >
           Start Game
         </button>
-      </form>
+      </div>
     </div>
   );
 }
