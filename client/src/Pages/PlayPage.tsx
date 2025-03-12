@@ -198,7 +198,7 @@ const PlayPage = () => {
           </div>
         </div>
 
-        <div className="player-list flex flex-col gap-2 px-4">
+        <div className="player-list flex flex-col gap-2 px-4 pb-4">
           {players.map((player, index) => (
             <div
               key={index}
