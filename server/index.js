@@ -18,7 +18,7 @@ app.get('/api', (_req, res) => {
 
 app.get('/api/courses', async (_req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM courses');
+    const result = await pool.query('SELECT * FROM courses ORDER BY course_name ASC');
     res.status(200).json(result.rows);
   } catch (error) {
     console.error(error);
